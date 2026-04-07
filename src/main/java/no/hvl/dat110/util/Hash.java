@@ -19,31 +19,38 @@ public class Hash {
 		BigInteger hashint = null;
 		
 		// Task: Hash a given string using MD5 and return the result as a BigInteger.
-		
-		// we use MD5 with 128 bits digest
-		
-		// compute the hash of the input 'entity'
-		
-		// convert the hash into hex format
-		
-		// convert the hex into BigInteger
-		
+		try {
+			// we use MD5 with 128 bits digest
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			// compute the hash of the input 'entity'
+			byte[] digest = md.digest(entity.getBytes("UTF-8"));
+
+			// convert the hash into hex format
+			String hex = toHex(digest);
+
+			// convert the hex into BigInteger
+			hashint = new BigInteger(hex, 16);
+
+		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+
 		// return the BigInteger
-		
 		return hashint;
 	}
 	
 	public static BigInteger addressSize() {
 		
 		// Task: compute the address size of MD5
-		
 		// compute the number of bits = bitSize()
-		
+		int bits = bitSize();
+
 		// compute the address size = 2 ^ number of bits
-		
+		BigInteger addressSize = BigInteger.valueOf(2).pow(bits);
+
 		// return the address size
-		
-		return null;
+		return addressSize;
 	}
 	
 	public static int bitSize() {
@@ -51,8 +58,15 @@ public class Hash {
 		int digestlen = 0;
 		
 		// find the digest length
-		
-		return digestlen*8;
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+			digestlen = md.getDigestLength();
+
+		} catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+
+        return digestlen*8;
 	}
 	
 	public static String toHex(byte[] digest) {
