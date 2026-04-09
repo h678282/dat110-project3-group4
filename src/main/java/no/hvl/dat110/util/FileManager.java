@@ -15,6 +15,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
@@ -88,20 +89,31 @@ public class FileManager {
     	// Task1: Given a filename, make replicas and distribute them to all active peers such that: pred < replica <= peer
     	
     	// Task2: assign a replica as the primary for this file. Hint, see the slide (project 3) on Canvas
-    	
+
     	// create replicas of the filename
-    	
+		createReplicaFiles();
+
 		// iterate over the replicas
-    	
-    	// for each replica, find its successor (peer/node) by performing findSuccessor(replica)
-    	
-    	// call the addKey on the successor and add the replica
-		
-		// implement a logic to decide if this successor should be assigned as the primary for the file
-    	
-    	// call the saveFileContent() on the successor and set isPrimary=true if logic above is true otherwise set isPrimary=false
-    	
-    	// increment counter
+		for (int i = 0; i < replicafiles.length; i++) {
+			BigInteger replica = replicafiles[i];
+
+			// for each replica, find its successor (peer/node) by performing findSuccessor(replica)
+			NodeInterface successor = chordnode.findSuccessor(replica);
+
+			if (successor != null) {
+				// call the addKey on the successor and add the replica
+				successor.addKey(replica);
+
+				// implement a logic to decide if this successor should be assigned as the primary for the file
+				boolean isPrimary = (i == index);
+
+				// call the saveFileContent() on the successor and set isPrimary=true if logic above is true otherwise set isPrimary=false
+				successor.saveFileContent(filename, replica, bytesOfFile, isPrimary);
+
+				// increment counter
+				counter++;
+			}
+		}
 		return counter;
     }
 	
