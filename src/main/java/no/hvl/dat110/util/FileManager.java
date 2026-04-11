@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.rmi.RemoteException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -129,16 +130,25 @@ public class FileManager {
 		activeNodesforFile = new HashSet<Message>(); 
 
 		// Task: Given a filename, find all the peers that hold a copy of this file
-		
 		// generate the N replicas from the filename by calling createReplicaFiles()
-		
+		createReplicaFiles();
+
 		// iterate over the replicas of the file
-		
-		// for each replica, do findSuccessor(replica) that returns successor s.
-		
-		// get the metadata (Message) of the replica from the successor (i.e., active peer) of the file
-		
-		// save the metadata in the set activeNodesforFile.
+		for (BigInteger replica : replicafiles) {
+
+			// for each replica, do findSuccessor(replica) that returns successor s.
+			NodeInterface successor = chordnode.findSuccessor(replica);
+
+			if (successor != null) {
+				// get the metadata (Message) of the replica from the successor (i.e., active peer) of the file
+				Message metadata = successor.getFilesMetadata(replica);
+
+				if (metadata != null) {
+					// save the metadata in the set activeNodesforFile.
+					activeNodesforFile.add(metadata);
+				}
+			}
+		}
 		
 		return activeNodesforFile;
 	}
